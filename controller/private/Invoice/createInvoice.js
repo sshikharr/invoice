@@ -4,83 +4,79 @@ const Invoice = require("../../../database/models/InvoiceModel");
 const generateInvoicePDF = require("../../../utils/generateInvoicePDF");
 
 const createInvoice = async (req, res) => {
-  const {
-    subTitle,
-    invoiceNumber,
-    invoiceDate,
-    dueDate,
-    businessLogoUrl,
-    billedBy,
-    billedTo,
-    items,
-    discount,
-    additionalCharges,
-    shippingCharges,
-    tax,
-    total,
-    signatureUrl,
-    contactDetails,
-    shippingDetails,
-  } = req.body;
-
-  const adminId = req.adminId;
-
   try {
-    // Validate Admin existence
-    const admin = await Admin.findById(adminId);
-    if (!admin) {
-      return res.status(404).json({ message: "Admin not found." });
-    }
-
-    // Validate Vendor existence
-    const vendor = await Vendor.findById(billedTo.vendorId);
-    if (!vendor) {
-      return res.status(404).json({ message: "Vendor not found." });
-    }
-
-    // Create a new Invoice
-    const newInvoice = new Invoice({
-      adminId,
-      vendorId: billedTo.vendorId,
+    const {
       subTitle,
-      invoiceNumber,
       invoiceDate,
       dueDate,
       businessLogoUrl,
       billedBy,
-      billedTo,
       items,
       discount,
       additionalCharges,
       shippingCharges,
-      tax,
       total,
       signatureUrl,
       contactDetails,
       shippingDetails,
+      vendorId
+    } = req.body;
+
+    const ownerId = req.adminId; // Assuming you have user info in req.user from auth middleware
+
+    // Validate owner existence
+    const owner = await Admin.findById(ownerId);
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+
+    // Validate vendor existence
+    const vendor = await Vendor.findById(vendorId);
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+
+    // Create new invoice
+    const newInvoice = new Invoice({
+      ownerId,
+      createdBy: ownerId,
+      vendorId,
+      subTitle,
+      invoiceDate: new Date(invoiceDate),
+      dueDate: new Date(dueDate),
+      businessLogoUrl,
+      billedBy,
+      items: items.map(item => ({
+        name: item.name,
+        description: item.description,
+        thumbnailUrl: item.thumbnailUrl,
+        quantity: item.quantity,
+        rate: item.rate,
+        amount: item.quantity * item.rate,
+        hsn: item.hsn,
+        unit: item.unit,
+        tax: item.tax || 0
+      })),
+      discount: discount || 0,
+      additionalCharges: additionalCharges || 0,
+      shippingCharges: shippingCharges || 0,
+      total,
+      signatureUrl,
+      contactDetails,
+      shippingDetails
     });
 
-    // Save the Invoice
+    // Save the invoice
     await newInvoice.save();
 
-    // Initialize invoices arrays if undefined
-    admin.invoices = admin.invoices || [];
-    vendor.invoices = vendor.invoices || [];
-
-    // Associate the Invoice with Admin and Vendor
-    admin.invoices.push(newInvoice._id);
-    vendor.invoices.push(newInvoice._id);
-    await admin.save();
-    await vendor.save();
-
+    // Generate PDF
     const pdf = await generateInvoicePDF({
       subTitle,
-      invoiceNumber,
       invoiceDate,
       dueDate,
       businessLogoUrl,
       billedBy,
-      billedTo,
       items,
       discount,
       additionalCharges,
@@ -88,22 +84,22 @@ const createInvoice = async (req, res) => {
       total,
       signatureUrl,
       contactDetails,
-      shippingDetails,
+      shippingDetails
     });
 
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=invoice-${invoiceNumber}.pdf`,
+    // Send response
+    res.status(201).json({
+      message: "Invoice created successfully",
+      invoice: newInvoice,
+      pdf: pdf.toString('base64')
     });
 
-    // Send response with the PDF
-    res.status(201).send({
-      pdf: pdf.toString("base64"),
-      message: "Invoice created successfully!",
+  } catch (error) {
+    console.error('Error creating invoice:', error);
+    res.status(500).json({ 
+      message: "Error creating invoice", 
+      error: error.message 
     });
-  } catch (err) {
-    console.error("Error creating invoice:", err);
-    res.status(500).json({ message: "Server error, please try again later." });
   }
 };
 

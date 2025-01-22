@@ -6,6 +6,7 @@ const {
   getInvoices,
 } = require("../../controller/private"); // Adjust the path as needed
 const { authMiddleware } = require("../../middleware"); // Adjust the path as needed
+const uploadMiddleware = require("../../middleware/uploadMiddleware");
 const router = express.Router();
 
 /**
@@ -13,7 +14,7 @@ const router = express.Router();
  */
 
 // Protected Route to create an invoice (requires authentication)
-router.post("/:vendorId?", authMiddleware, createInvoice);
+router.post("/", authMiddleware, createInvoice);
 
 // Protected Route to update an invoice (requires authentication)
 router.put("/update/:invoiceId", authMiddleware, updateInvoice);

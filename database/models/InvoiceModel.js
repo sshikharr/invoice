@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 const invoiceSchema = new Schema(
   {
-    adminId: {
+    ownerId: {
       type: ObjectId,
       ref: "Admin", // Reference to the admin who created the invoice
       required: true,
@@ -15,15 +15,11 @@ const invoiceSchema = new Schema(
       ref: "Admin"
     },
     vendorId: {
-      type: ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Vendor", // Reference to the vendor
       required: true,
     },
     subTitle: {
-      type: String,
-      required: true,
-    },
-    invoiceNumber: {
       type: String,
       required: true,
     },
@@ -46,13 +42,6 @@ const invoiceSchema = new Schema(
       },
       address: {
         type: String,
-        required: true,
-      },
-    },
-    billedTo: {
-      clientId: {
-        type: ObjectId,
-        ref: "Vendor",
         required: true,
       },
     },
@@ -90,6 +79,10 @@ const invoiceSchema = new Schema(
           type: String,
           enum : ['kg','litre','meter','unit']
         },
+        tax: {
+          type: Number,
+          default: 0,
+        },
       },
     ],
     discount: {
@@ -101,10 +94,6 @@ const invoiceSchema = new Schema(
       default: 0,
     },
     shippingCharges: {
-      type: Number,
-      default: 0,
-    },
-    tax: {
       type: Number,
       default: 0,
     },
@@ -154,7 +143,7 @@ const invoiceSchema = new Schema(
       specialInstructions: {
         type: String,
       },
-    },
+    }
   },
   { timestamps: true }
 );
