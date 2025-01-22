@@ -3,25 +3,30 @@ const { Schema } = mongoose;
 
 const vendorSchema = new Schema(
   {
-    logo: {
+    businessId: {
       type: String, // Store the URL/path of the uploaded logo
     },
-    businessName: {
+    name: {
       type: String,
-      required: [true, "Business name is required"],
+      required: true,
     },
-    vendorIndustry: {
+    email: {
+      required: [true, "Email is required"],
       type: String,
+      unique: true,
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        "Please provide a valid email address",
+      ],
     },
-    country: {
+    phoneNumber: {
+      required: [true, "Phone number is required"],
       type: String,
-      required: [true, "Country is required"],
+      unique: true,
     },
-    cityTown: {
-      type: String,
-    },
-    vatNumber: {
-      type: String,
+    taxInformation: {
+      gstin: String,
+      pan: String,
     },
     billingAddress: {
       country: String,
@@ -38,42 +43,29 @@ const vendorSchema = new Schema(
       postalCode: String,
       streetAddress: String,
     },
-    businessAlias: {
-      type: String,
+    adress: {
+      stree: String,
+      state: String,
+      city: String,
+      postalCode: String,
     },
-    email: {
-      required: [true, "Email is required"],
-      type: String,
-      unique: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        "Please provide a valid email address",
-      ],
+    bankDetails: {
+      accountName: String,
+      accountNumber: String,
+      ifscCode: String,
+      bankName: String,
+      branch: String,
     },
-    phoneNumber: {
-      required: [true, "Phone number is required"],
-      type: String,
-      unique: true,
-    },
-    adminId: {
+
+    ownerId: {
       type: Schema.Types.ObjectId,
       ref: "Admin",
       required: true,
     },
-    GSTIN:{
-      type: String,
-    },
-    PAN:{
-      type: String,
-    },
-    createdBy:{
+
+    createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "Admin"
-    },
-    status: {
-      type: String,
-      enum: ["Active", "Not active", "Archieved"],
-      default: "Active",
+      ref: "Admin",
     },
   },
   {

@@ -4,29 +4,23 @@ const Admin = require("../../../database/models/adminModel");
 const createVendor = async (req, res) => {
   try {
     const {
-      businessName,
-      vendorIndustry,
-      country,
-      cityTown,
-      vatNumber,
-      billingAddress,
-      shippingDetails,
-      businessAlias,
+      businessId,
+      name,
       email,
       phoneNumber,
-      showEmailInInvoice,
-      showPhoneInInvoice,
-      customFields,
-      GSTIN,
-      PAN,
+      taxInformation,
+      billingAddress,
+      shippingDetails,
+      adress,
+      bankDetails,
       logo,
-      attachmentUrls,
     } = req.body;
 
-    if (!businessName || !phoneNumber || !email || !country) {
-      return res
-        .status(400)
-        .json({ message: "Please fill in all required fields" });
+    if (!name || !phoneNumber || !email) {
+      return res.status(400).json({
+        message:
+          "Please fill in all required fields (name, email, phone number).",
+      });
     }
 
     const adminId = req.adminId;
@@ -49,25 +43,21 @@ const createVendor = async (req, res) => {
 
     // Create new vendor
     const vendor = new Vendor({
-      logo,
-      businessName,
-      vendorIndustry,
-      country,
-      cityTown,
-      vatNumber,
-      billingAddress,
-      shippingDetails,
-      businessAlias,
+      businessId,
+      name,
       email,
       phoneNumber,
-      showEmailInInvoice,
-      showPhoneInInvoice,
-      attachments: attachmentUrls,
-      customFields,
-      GSTIN,
-      PAN,
-      adminId,
-      status: "Active",
+      taxInformation: {
+        gstin: taxInformation?.gstin,
+        pan: taxInformation?.pan,
+      },
+      billingAddress,
+      shippingDetails,
+      adress,
+      bankDetails,
+      logo,
+      ownerId: adminId,
+      createdBy: adminId,
     });
 
     await vendor.save();
@@ -81,8 +71,6 @@ const createVendor = async (req, res) => {
       message: "Vendor created successfully",
       vendor: {
         ...vendor.toObject(),
-        logo,
-        attachments: attachmentUrls,
       },
     });
   } catch (error) {
