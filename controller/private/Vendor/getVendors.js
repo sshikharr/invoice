@@ -1,37 +1,34 @@
 const Vendor = require("../../../database/models/vendorModel");
 
 const searchVendors = async (req, res) => {
-  const { name, searchQuery } = req.query;
+  const { businessId, searchQuery } = req.query;
 
   try {
     // Build the base filter
     const filters = {};
 
-    // Apply name filter if present
-    if (name) {
-      filters.name = { $regex: name, $options: "i" }; // Updated from 'businessName' to 'name' per the schema
+    // Apply businessId filter if present
+    if (businessId) {
+      filters.businessId = businessId;
     }
+
+    // Perform the initial search with the businessId filter if it exists
+    let vendors = await Vendor.find(filters).limit(10);
 
     // Apply searchQuery filter if present
     if (searchQuery) {
-      const searchFilters = {
-        $or: [
-          { email: { $regex: searchQuery, $options: "i" } },
-          { phoneNumber: { $regex: searchQuery, $options: "i" } },
-          { "taxInformation.gstin": { $regex: searchQuery, $options: "i" } }, // Updated GSTIN to match the schema
-          { "taxInformation.pan": { $regex: searchQuery, $options: "i" } }, // Added PAN for additional search
-        ],
-      };
-      // Combine filters: if name exists, apply search within it
-      if (name) {
-        filters.$and = [filters, searchFilters];
-      } else {
-        Object.assign(filters, searchFilters);
-      }
+      // If searchQuery exists, filter the already filtered vendors
+      vendors = vendors.filter(vendor => {
+        return (
+          vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          vendor.phoneNumber.includes(searchQuery) ||
+          (vendor.taxInformation.gstin &&
+            vendor.taxInformation.gstin.includes(searchQuery)) ||
+          (vendor.taxInformation.pan && vendor.taxInformation.pan.includes(searchQuery))
+        );
+      });
     }
-
-    // Perform the search with the built filters
-    const vendors = await Vendor.find(filters).limit(10);
 
     if (vendors.length === 0) {
       return res.status(404).json({ message: "No vendors found." });
