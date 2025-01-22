@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 const vendorSchema = new Schema(
   {
     businessId: {
-      type: String, // Store the URL/path of the uploaded logo
+      type: String,
+      ref: "Business",
     },
     name: {
       type: String,
