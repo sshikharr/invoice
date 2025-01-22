@@ -12,7 +12,10 @@ const {
   getInvoices,
 } = require("./Invoice");
 const { 
-  createBusiness 
+  createBusiness, 
+  updateBusiness,
+  getBusiness,
+  deleteBusiness
 } = require("./Business");
 
 module.exports = {
@@ -28,5 +31,8 @@ module.exports = {
   updateVendor,
   getVendorById,
   //busniness
-  createBusiness  
+  createBusiness,
+  updateBusiness,
+  getBusiness,
+  deleteBusiness
 };
