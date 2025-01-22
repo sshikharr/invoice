@@ -14,6 +14,6 @@ router.post("/", authMiddleware, uploadMiddleware, createUploadInvoice);
 
 router.get("/", authMiddleware, getUploadInvoices)
 
-router.get("/:uploadInvoiceId", authMiddleware, getUploadInvoiceById)
+router.get("/:id", authMiddleware, getUploadInvoiceById)
 
 module.exports = router;

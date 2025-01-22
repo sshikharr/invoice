@@ -3,8 +3,6 @@ const UploadInvoice = require("../../../database/models/uploadInvoiceModel");
 const getUploadInvoiceById = async (req, res) => {
   const { id } = req.params; // Extract the invoice ID from the request parameters
 
-  console.log("id", id);
-
   try {
     // Find the invoice by ID and populate business and vendor details
     const invoice = await UploadInvoice.findById(id)
