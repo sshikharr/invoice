@@ -1,6 +1,7 @@
 const createInvoice = require("./createInvoice");
 const deleteInvoice = require("./deleteInvoice");
 const getInvoices = require("./getInvoices");
+const invoiceDashboard = require("./invoiceDashboard");
 const updateInvoice = require("./updateInvoice");
 
 module.exports = {
@@ -8,4 +9,5 @@ module.exports = {
   updateInvoice,
   deleteInvoice,
   getInvoices,
+  invoiceDashboard
 };

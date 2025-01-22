@@ -4,6 +4,7 @@ const {
   deleteInvoice,
   updateInvoice,
   getInvoices,
+  invoiceDashboard,
 } = require("../../controller/private"); // Adjust the path as needed
 const { authMiddleware } = require("../../middleware"); // Adjust the path as needed
 const uploadMiddleware = require("../../middleware/uploadMiddleware");
@@ -24,5 +25,7 @@ router.delete("/:invoiceId", authMiddleware, deleteInvoice);
 
 // Protected Route to get invoice details by ID (requires authentication)
 router.get("/:invoiceId", authMiddleware, getInvoices);
+
+router.get("/", authMiddleware, invoiceDashboard);
 
 module.exports = router;

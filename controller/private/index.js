@@ -10,6 +10,7 @@ const {
   updateInvoice,
   deleteInvoice,
   getInvoices,
+  invoiceDashboard,
 } = require("./Invoice");
 const { 
   createBusiness, 
@@ -30,6 +31,7 @@ module.exports = {
   updateInvoice,
   deleteInvoice,
   getInvoices,
+  invoiceDashboard,
   //vendor
   createVendor,
   deleteVendor,
