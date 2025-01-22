@@ -8,7 +8,7 @@ const updateVendor = async (req, res) => {
     const adminId = req.adminId;
 
     // Verify the vendor exists and belongs to the admin
-    const vendor = await Vendor.findOne({ _id: vendorId, adminId });
+    const vendor = await Vendor.findOne({ _id: vendorId, ownerId: adminId });
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
@@ -26,12 +26,26 @@ const updateVendor = async (req, res) => {
       if (existingVendor) {
         return res.status(400).json({
           message:
-            "Another vendor already exists with this phone number or email",
+            "Another vendor already exists with this phone number or email.",
         });
       }
     }
 
-    // Update vendor properties dynamically
+    // Handle nested fields for updates (e.g., taxInformation, billingAddress, etc.)
+    const nestedFields = [
+      "taxInformation",
+      "billingAddress",
+      "shippingDetails",
+      "bankDetails",
+    ];
+    nestedFields.forEach((field) => {
+      if (updates[field]) {
+        vendor[field] = { ...vendor[field].toObject(), ...updates[field] };
+        delete updates[field]; // Remove from the main updates to prevent overwriting as a whole object
+      }
+    });
+
+    // Update remaining vendor properties dynamically
     Object.keys(updates).forEach((key) => {
       vendor[key] = updates[key];
     });

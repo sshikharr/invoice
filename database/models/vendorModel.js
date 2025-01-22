@@ -3,43 +3,12 @@ const { Schema } = mongoose;
 
 const vendorSchema = new Schema(
   {
-    logo: {
+    businessId: {
       type: String, // Store the URL/path of the uploaded logo
     },
-    businessName: {
+    name: {
       type: String,
-      required: [true, "Business name is required"],
-    },
-    vendorIndustry: {
-      type: String,
-    },
-    country: {
-      type: String,
-      required: [true, "Country is required"],
-    },
-    cityTown: {
-      type: String,
-    },
-    vatNumber: {
-      type: String,
-    },
-    billingAddress: {
-      country: String,
-      state: String,
-      cityTown: String,
-      postalCode: String,
-      streetAddress: String,
-    },
-    shippingDetails: {
-      name: String,
-      country: String,
-      state: String,
-      cityTown: String,
-      postalCode: String,
-      streetAddress: String,
-    },
-    businessAlias: {
-      type: String,
+      required: true,
     },
     email: {
       required: [true, "Email is required"],
@@ -55,25 +24,51 @@ const vendorSchema = new Schema(
       type: String,
       unique: true,
     },
-    adminId: {
+    taxInformation: {
+      gstin: String,
+      pan: String,
+    },
+    shippingDetails: {
+      name: String,
+      country: String,
+      state: String,
+      cityTown: String,
+      postalCode: String,
+      streetAddress: String,
+    },
+    billingAddress: {
+      name: String,
+      country: String,
+      state: String,
+      cityTown: String,
+      postalCode: String,
+      streetAddress: String,
+    },
+
+    address: {
+      street: String,
+      state: String,
+      city: String,
+      postalCode: String,
+      country: string,
+    },
+    bankDetails: {
+      accountName: String,
+      accountNumber: String,
+      ifscCode: String,
+      bankName: String,
+      branch: String,
+    },
+
+    ownerId: {
       type: Schema.Types.ObjectId,
       ref: "Admin",
       required: true,
     },
-    GSTIN:{
-      type: String,
-    },
-    PAN:{
-      type: String,
-    },
-    createdBy:{
+
+    createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "Admin"
-    },
-    status: {
-      type: String,
-      enum: ["Active", "Not active", "Archieved"],
-      default: "Active",
+      ref: "Admin",
     },
   },
   {

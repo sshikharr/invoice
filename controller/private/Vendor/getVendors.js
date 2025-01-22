@@ -1,15 +1,15 @@
 const Vendor = require("../../../database/models/vendorModel");
 
 const searchVendors = async (req, res) => {
-  const { businessName, searchQuery } = req.query;
+  const { name, searchQuery } = req.query;
 
   try {
     // Build the base filter
     const filters = {};
 
-    // Apply businessName filter if present
-    if (businessName) {
-      filters.businessName = { $regex: businessName, $options: "i" };
+    // Apply name filter if present
+    if (name) {
+      filters.name = { $regex: name, $options: "i" }; // Updated from 'businessName' to 'name' per the schema
     }
 
     // Apply searchQuery filter if present
@@ -18,11 +18,12 @@ const searchVendors = async (req, res) => {
         $or: [
           { email: { $regex: searchQuery, $options: "i" } },
           { phoneNumber: { $regex: searchQuery, $options: "i" } },
-          { GSTIN: { $regex: searchQuery, $options: "i" } },
+          { "taxInformation.gstin": { $regex: searchQuery, $options: "i" } }, // Updated GSTIN to match the schema
+          { "taxInformation.pan": { $regex: searchQuery, $options: "i" } }, // Added PAN for additional search
         ],
       };
-      // Combine filters: if businessName exists, apply search within it
-      if (businessName) {
+      // Combine filters: if name exists, apply search within it
+      if (name) {
         filters.$and = [filters, searchFilters];
       } else {
         Object.assign(filters, searchFilters);
