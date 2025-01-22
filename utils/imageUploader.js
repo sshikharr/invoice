@@ -1,5 +1,12 @@
 const cloudinary = require('cloudinary').v2;
 
+// Configure Cloudinary with your credentials
+cloudinary.config({
+    cloud_name: 'dlzkqms1c',
+    api_key: '581352258752848',
+    api_secret: 'Vqn_e8MTYudvia7WD36IXBg_46k'
+});
+
 const imageUploader = (imageBuffer)=>{
     
     // Making an async call to upload the image

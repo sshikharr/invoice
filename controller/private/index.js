@@ -18,6 +18,12 @@ const {
   deleteBusiness
 } = require("./Business");
 
+const {
+  createUploadInvoice,
+  getUploadInvoices,
+  getUploadInvoiceById
+} = require("./uploadInvoice");
+
 module.exports = {
   //invoice
   createInvoice,
@@ -34,5 +40,9 @@ module.exports = {
   createBusiness,
   updateBusiness,
   getBusiness,
-  deleteBusiness
+  deleteBusiness,
+  //uploadInvoice
+  createUploadInvoice,
+  getUploadInvoices,
+  getUploadInvoiceById
 };
