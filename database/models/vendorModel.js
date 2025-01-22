@@ -43,8 +43,8 @@ const vendorSchema = new Schema(
       postalCode: String,
       streetAddress: String,
     },
-    adress: {
-      stree: String,
+    address: {
+      street: String,
       state: String,
       city: String,
       postalCode: String,

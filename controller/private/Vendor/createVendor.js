@@ -11,7 +11,7 @@ const createVendor = async (req, res) => {
       taxInformation,
       billingAddress,
       shippingDetails,
-      adress,
+      address,
       bankDetails,
       logo,
     } = req.body;
