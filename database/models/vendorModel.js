@@ -28,13 +28,6 @@ const vendorSchema = new Schema(
       gstin: String,
       pan: String,
     },
-    billingAddress: {
-      country: String,
-      state: String,
-      cityTown: String,
-      postalCode: String,
-      streetAddress: String,
-    },
     shippingDetails: {
       name: String,
       country: String,
@@ -43,11 +36,21 @@ const vendorSchema = new Schema(
       postalCode: String,
       streetAddress: String,
     },
+    billingAddress: {
+      name: String,
+      country: String,
+      state: String,
+      cityTown: String,
+      postalCode: String,
+      streetAddress: String,
+    },
+
     address: {
       street: String,
       state: String,
       city: String,
       postalCode: String,
+      country: string,
     },
     bankDetails: {
       accountName: String,

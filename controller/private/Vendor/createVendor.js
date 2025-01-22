@@ -53,7 +53,7 @@ const createVendor = async (req, res) => {
       },
       billingAddress,
       shippingDetails,
-      adress,
+      address,
       bankDetails,
       logo,
       ownerId: adminId,
