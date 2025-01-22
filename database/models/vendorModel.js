@@ -50,7 +50,7 @@ const vendorSchema = new Schema(
       state: String,
       city: String,
       postalCode: String,
-      country: string,
+      country: String,
     },
     bankDetails: {
       accountName: String,

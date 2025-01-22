@@ -11,6 +11,9 @@ const {
   deleteInvoice,
   getInvoices,
 } = require("./Invoice");
+const { 
+  createBusiness 
+} = require("./Business");
 
 module.exports = {
   //invoice
@@ -24,4 +27,6 @@ module.exports = {
   getVendors,
   updateVendor,
   getVendorById,
+  //busniness
+  createBusiness  
 };
