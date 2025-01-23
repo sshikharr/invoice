@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const invoiceSchema = new Schema(
   {
     ownerId: {
-      type: ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Admin", // Reference to the admin who created the invoice
       required: true,
     },

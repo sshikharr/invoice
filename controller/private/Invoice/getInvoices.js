@@ -1,79 +1,76 @@
 const Invoice = require("../../../database/models/InvoiceModel");
 
 const getInvoices = async (req, res) => {
+  const { minAmount, maxAmount, dateRange, subTitle } = req.query;
+
   try {
-    const { status, business, minAmt, maxAmt } = req.query;
-    const adminId = req.adminId;
-    const { description } = req.body;
+    // Build the base filter object
+    const filters = {};
 
-    // Base query object
-    let query = {
-      adminId: adminId // Always filter by adminId
-    };
-
-    // Add filters only if they are provided and not empty strings
-    if (status && status !== '') {
-      query.status = status;
-    }
-
-    if (business && business !== '') {
-      query['billedBy.businessName'] = { 
-        $regex: new RegExp(business, 'i') // Case-insensitive search
-      };
-    }
-
-    // Add amount range filter if either min or max is provided
-    if ((minAmt && minAmt !== '') || (maxAmt && maxAmt !== '')) {
-      query.total = {};
-      
-      if (minAmt && minAmt !== '') {
-        query.total.$gte = parseFloat(minAmt);
+    // Apply amount range filter if provided
+    if (minAmount || maxAmount) {
+      filters.total = {};
+      if (minAmount) {
+        filters.total.$gte = parseFloat(minAmount);
       }
-      
-      if (maxAmt && maxAmt !== '') {
-        query.total.$lte = parseFloat(maxAmt);
+      if (maxAmount) {
+        filters.total.$lte = parseFloat(maxAmount);
       }
     }
 
-    // Add description search if provided
-    if (description && description !== '') {
-      query['items.description'] = {
-        $regex: new RegExp(description, 'i') // Case-insensitive search
-      };
+    // Apply date range filter
+    if (dateRange) {
+      const today = new Date();
+      let startDate, endDate;
+
+      switch (dateRange) {
+        case "thisWeek":
+          startDate = new Date(today.setDate(today.getDate() - today.getDay())); // Start of the week
+          endDate = new Date(); // Current date
+          break;
+        case "thisMonth":
+          startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Start of the month
+          endDate = new Date(); // Current date
+          break;
+        case "thisYear":
+          startDate = new Date(today.getFullYear(), 0, 1); // Start of the year
+          endDate = new Date(); // Current date
+          break;
+        case "beforeYear":
+          endDate = new Date(today.getFullYear() - 1, 11, 31); // End of last year
+          break;
+        default:
+          break;
+      }
+
+      if (startDate) filters.invoiceDate = { ...filters.invoiceDate, $gte: startDate };
+      if (endDate) filters.invoiceDate = { ...filters.invoiceDate, $lte: endDate };
     }
 
-    // Execute query with pagination
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    // Fetch filtered invoices
+    let invoices = await Invoice.find(filters)
+      .populate("ownerId", "name") // Populate owner details
+      .populate("vendorId", "name") // Populate vendor details
+      .sort({ invoiceDate: -1 }); // Sort by invoice date in descending order
 
-    const invoices = await Invoice.find(query)
-      .populate('vendorId', 'name email phone') // Populate vendor details
-      .sort({ createdAt: -1 }) // Sort by latest first
-      .skip(skip)
-      .limit(limit);
+    // Apply subtitle search filter on the filtered results
+    if (subTitle) {
+      const searchRegex = new RegExp(subTitle, "i"); // Case-insensitive regex
+      invoices = invoices.filter(invoice => searchRegex.test(invoice.subTitle));
+    }
 
-    // Get total count for pagination
-    const total = await Invoice.countDocuments(query);
-
-    return res.status(200).json({
+    // Send response
+    res.status(200).json({
       success: true,
-      data: {
-        invoices,
-        pagination: {
-          total,
-          page,
-          totalPages: Math.ceil(total / limit)
-        }
-      }
+      count: invoices.length,
+      data: invoices,
     });
-
   } catch (error) {
-    console.error('Error in getInvoices:', error);
-    return res.status(500).json({
+    console.error("Error fetching invoices:", error);
+    res.status(500).json({
       success: false,
-      message: 'Internal server error',
-      error: error.message
+      message: "Error fetching invoices",
+      error: error.message,
     });
   }
 };

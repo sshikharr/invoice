@@ -18,14 +18,14 @@ const router = express.Router();
 router.post("/", authMiddleware, createInvoice);
 
 // Protected Route to update an invoice (requires authentication)
-router.put("/update/:invoiceId", authMiddleware, updateInvoice);
+router.put("/update/:id", authMiddleware, updateInvoice);
 
 // Protected Route to delete an invoice (requires authentication)
-router.delete("/:invoiceId", authMiddleware, deleteInvoice);
+router.delete("/:id", authMiddleware, deleteInvoice);
 
 // Protected Route to get invoice details by ID (requires authentication)
-router.get("/:invoiceId", authMiddleware, getInvoices);
+router.get("/", authMiddleware, getInvoices);
 
-router.get("/", authMiddleware, invoiceDashboard);
+router.get("/dashboard", authMiddleware, invoiceDashboard);
 
 module.exports = router;

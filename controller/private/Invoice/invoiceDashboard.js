@@ -2,74 +2,39 @@ const Invoice = require("../../../database/models/InvoiceModel");
 
 const invoiceDashboard = async (req, res) => {
   try {
-    const adminId = req.adminId;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    // Get dashboard statistics
-    const stats = await Invoice.aggregate([
-      {
-        $match: { ownerId: adminId },
-      },
+    // Perform aggregation to get total invoices, total amount, and average amount
+    const summary = await Invoice.aggregate([
       {
         $group: {
-          _id: null,
-          totalInvoices: { $sum: 1 },
-          totalAmount: { $sum: "$total" },
-          averageAmount: { $avg: "$total" },
-          pendingInvoices: {
-            $sum: {
-              $cond: [{ $eq: ["$status", "pending"] }, 1, 0],
-            },
-          },
+          _id: null, // Grouping all invoices together
+          totalInvoices: { $count: {} }, // Count total number of invoices
+          totalAmount: { $sum: "$total" }, // Sum of all invoice totals
+          averageAmount: { $avg: "$total" }, // Average of all invoice totals
         },
       },
     ]);
 
-    // Get latest invoices with pagination
-    const latestInvoices = await Invoice.find({ ownerId: adminId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("vendorId", "name email phoneNumber")
-      .lean();
-
-    // Get total count for pagination
-    const totalCount = await Invoice.countDocuments({ ownerId: adminId });
-
-    const dashboardStats = stats[0] || {
-      totalInvoices: 0,
-      totalAmount: 0,
-      averageAmount: 0,
-      pendingInvoices: 0,
-    };
-
-    res.status(200).json({
-      success: true,
-      data: {
-        stats: {
-          totalInvoices: dashboardStats.totalInvoices,
-          totalAmount: Math.round(dashboardStats.totalAmount * 100) / 100,
-          averageAmount: Math.round(dashboardStats.averageAmount * 100) / 100,
-          pendingInvoices: dashboardStats.pendingInvoices,
+    // Check if summary exists and return it
+    if (summary.length > 0) {
+      res.status(200).json({
+        success: true,
+        data: summary[0], // We get the result in an array, so take the first element
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        data: {
+          totalInvoices: 0,
+          totalAmount: 0,
+          averageAmount: 0,
         },
-        latestInvoices: {
-          invoices: latestInvoices,
-          pagination: {
-            currentPage: page,
-            totalPages: Math.ceil(totalCount / limit),
-            totalInvoices: totalCount,
-            hasMore: page * limit < totalCount,
-          },
-        },
-      },
-    });
+      });
+    }
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+    console.error("Error fetching invoice summary:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching dashboard data",
+      message: "Error fetching invoice summary",
       error: error.message,
     });
   }
