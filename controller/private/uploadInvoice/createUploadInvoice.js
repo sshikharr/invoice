@@ -1,7 +1,8 @@
 const cloudinary = require("cloudinary").v2;
-const UploadInvoice = require("../../../database/models/uploadInvoiceModel"); // Update the path as necessary
+const UploadInvoice = require("../../../database/models/uploadInvoiceModel");
 const Admin = require("../../../database/models/adminModel");
 const Vendor = require("../../../database/models/vendorModel");
+const Expenses = require("../../../database/models/expensesModel");
 const imageUploader = require("../../../utils/imageUploader");
 
 const createUploadInvoice = async (req, res) => {
@@ -46,10 +47,27 @@ const createUploadInvoice = async (req, res) => {
     // Save to database
     await newInvoice.save();
 
+    // Create new expense
+    const newExpense = new Expenses({
+      businessId,
+      vendorId,
+      amount: invoiceAmount,
+      category: "Miscellaneous", // You can adjust the category as needed
+      date: new Date(),
+      status: status || "Pending",
+      ownerId,
+      createdBy: ownerId,
+      description
+    });
+
+    // Save the expense to the database
+    await newExpense.save();
+
     // Send response
     res.status(201).json({
-      message: "Invoice uploaded successfully",
+      message: "Invoice uploaded and expense recorded successfully",
       invoice: newInvoice,
+      expense: newExpense
     });
   } catch (error) {
     console.error("Error uploading invoice:", error);

@@ -25,6 +25,11 @@ const {
   getUploadInvoiceById
 } = require("./uploadInvoice");
 
+const {
+  createExpenses,
+  getExpenses
+} = require("./Expenses");
+
 module.exports = {
   //invoice
   createInvoice,
@@ -46,5 +51,8 @@ module.exports = {
   //uploadInvoice
   createUploadInvoice,
   getUploadInvoices,
-  getUploadInvoiceById
+  getUploadInvoiceById,
+  //expenses
+  createExpenses,
+  getExpenses
 };

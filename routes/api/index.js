@@ -11,4 +11,6 @@ router.use("/business", require("./business"));
 
 router.use("/uploadInvoice", require("./uploadInvoice"));
 
+router.use("/expenses", require("./expenses"));
+
 module.exports = router;
