@@ -7,19 +7,20 @@ const imageUploader = require("../../../utils/imageUploader");
 
 const createUploadInvoice = async (req, res) => {
   try {
-    const { businessId, vendorId, invoiceAmount, status, invoiceName, description } = req.body;
+    const {
+      businessId,
+      vendorId,
+      invoiceAmount,
+      status,
+      invoiceName,
+      description,
+    } = req.body;
     const ownerId = req.adminId; // Assuming adminId is attached to the request by auth middleware
 
     // Validate admin existence
     const owner = await Admin.findById(ownerId);
     if (!owner) {
       return res.status(404).json({ message: "Owner not found" });
-    }
-
-    // Validate vendor existence
-    const vendor = await Vendor.findById(vendorId);
-    if (!vendor) {
-      return res.status(404).json({ message: "Vendor not found" });
     }
 
     // Check if file is uploaded
@@ -41,7 +42,7 @@ const createUploadInvoice = async (req, res) => {
       invoiceName,
       ownerId,
       createdBy: ownerId,
-      description
+      description,
     });
 
     // Save to database
@@ -57,7 +58,7 @@ const createUploadInvoice = async (req, res) => {
       status: status || "Pending",
       ownerId,
       createdBy: ownerId,
-      description
+      description,
     });
 
     // Save the expense to the database
@@ -67,7 +68,7 @@ const createUploadInvoice = async (req, res) => {
     res.status(201).json({
       message: "Invoice uploaded and expense recorded successfully",
       invoice: newInvoice,
-      expense: newExpense
+      expense: newExpense,
     });
   } catch (error) {
     console.error("Error uploading invoice:", error);

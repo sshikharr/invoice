@@ -30,10 +30,7 @@ const getUploadInvoices = async (req, res) => {
     }
 
     // Create the base query
-    let query = UploadInvoice.find(filters)
-      .populate("businessId", "name") // Populate business details
-      .populate("vendorId", "name") // Populate vendor details
-      .sort({ date: -1 }); // Sort by date descending
+    let query = UploadInvoice.find(filters).sort({ date: -1 }); // Sort by date descending
 
     // Apply search filter if present
     if (searchQuery) {

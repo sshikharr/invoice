@@ -10,6 +10,7 @@ const uploadInvoiceSchema = new Schema(
     vendorId: {
       type: Types.ObjectId,
       ref: "Vendor", // Reference to the vendor
+      required: false,
     },
     invoiceAmount: {
       type: Number,
