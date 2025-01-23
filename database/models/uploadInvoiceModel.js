@@ -10,7 +10,6 @@ const uploadInvoiceSchema = new Schema(
     vendorId: {
       type: Types.ObjectId,
       ref: "Vendor", // Reference to the vendor
-      required: true,
     },
     invoiceAmount: {
       type: Number,
@@ -46,7 +45,7 @@ const uploadInvoiceSchema = new Schema(
     description: {
       type: String,
       required: true,
-    }
+    },
   },
   { timestamps: true } // Automatically adds `createdAt` and `updatedAt` fields
 );
