@@ -2,7 +2,8 @@ const express = require("express");
 const {
     createUploadInvoice,
     getUploadInvoices,
-    getUploadInvoiceById
+    getUploadInvoiceById,
+    getDashboardStats
 } = require("../../controller/private"); // Adjust the path as needed
 const { authMiddleware } = require("../../middleware"); // Adjust the path as needed
 const uploadMiddleware = require("../../middleware/uploadMiddleware");
@@ -15,5 +16,7 @@ router.post("/", authMiddleware, uploadMiddleware, createUploadInvoice);
 router.get("/", authMiddleware, getUploadInvoices)
 
 router.get("/:id", authMiddleware, getUploadInvoiceById)
+
+router.get("/dashboard/stats", authMiddleware, getDashboardStats)
 
 module.exports = router;

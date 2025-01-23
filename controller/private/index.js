@@ -22,12 +22,14 @@ const {
 const {
   createUploadInvoice,
   getUploadInvoices,
-  getUploadInvoiceById
+  getUploadInvoiceById,
+  getDashboardStats
 } = require("./uploadInvoice");
 
 const {
   createExpenses,
-  getExpenses
+  getExpenses,
+  getExpenseDashboardStats
 } = require("./Expenses");
 
 module.exports = {
@@ -52,7 +54,9 @@ module.exports = {
   createUploadInvoice,
   getUploadInvoices,
   getUploadInvoiceById,
+  getDashboardStats,
   //expenses
   createExpenses,
-  getExpenses
+  getExpenses,
+  getExpenseDashboardStats
 };
